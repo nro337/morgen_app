@@ -4,7 +4,7 @@
   "title": "Morgen Tasks",
   "description": "Manage your Morgen tasks directly from Raycast",
   "icon": "command-icon.png",
-  "author": "your_name",
+  "author": "morgen-team",
   "categories": [
     "Productivity"
   ],
@@ -38,8 +38,7 @@
   ],
   "dependencies": {
     "@raycast/api": "^1.83.2",
-    "@raycast/utils": "^1.17.0",
-    "node-fetch": "^3.3.2"
+    "@raycast/utils": "^1.17.0"
   },
   "devDependencies": {
     "@raycast/eslint-config": "^1.0.11",

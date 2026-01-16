@@ -8,7 +8,7 @@ import {
   popToRoot,
   Icon,
 } from "@raycast/api";
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { MorgenAPI } from "./api/morgen";
 import { MorgenPreferences, UpdateTaskRequest, MorgenTask } from "./types";
 import { formatDateForMorgen, parseMorgenDate } from "./utils";
@@ -68,7 +68,10 @@ export default function UpdateTask({ task, onUpdate }: UpdateTaskProps) {
 
       // Parse tags
       const tags = values.tags
-        ? values.tags.split(",").map((tag) => tag.trim()).filter(Boolean)
+        ? values.tags
+            .split(",")
+            .map((tag) => tag.trim())
+            .filter(Boolean)
         : undefined;
 
       const updates: UpdateTaskRequest = {
@@ -76,7 +79,11 @@ export default function UpdateTask({ task, onUpdate }: UpdateTaskProps) {
         description: values.description?.trim() || undefined,
         due: dueDateTime,
         priority: values.priority ? parseInt(values.priority) : undefined,
-        status: values.status as "needsAction" | "completed" | "cancelled" | undefined,
+        status: values.status as
+          | "needsAction"
+          | "completed"
+          | "cancelled"
+          | undefined,
         notes: values.notes?.trim() || undefined,
         tags,
       };

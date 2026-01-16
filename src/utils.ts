@@ -33,7 +33,11 @@ export function formatDateForDisplay(dateString?: string): string {
   const date = parseMorgenDate(dateString);
   const now = new Date();
   const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
-  const taskDate = new Date(date.getFullYear(), date.getMonth(), date.getDate());
+  const taskDate = new Date(
+    date.getFullYear(),
+    date.getMonth(),
+    date.getDate(),
+  );
 
   const diffTime = taskDate.getTime() - today.getTime();
   const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));

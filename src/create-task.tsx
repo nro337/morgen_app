@@ -59,7 +59,10 @@ export default function CreateTask() {
 
       // Parse tags
       const tags = values.tags
-        ? values.tags.split(",").map((tag) => tag.trim()).filter(Boolean)
+        ? values.tags
+            .split(",")
+            .map((tag) => tag.trim())
+            .filter(Boolean)
         : undefined;
 
       const taskData: CreateTaskRequest = {
@@ -67,7 +70,11 @@ export default function CreateTask() {
         description: values.description?.trim() || undefined,
         due: dueDateTime,
         priority: values.priority ? parseInt(values.priority) : undefined,
-        status: values.status as "needsAction" | "completed" | "cancelled" | undefined,
+        status: values.status as
+          | "needsAction"
+          | "completed"
+          | "cancelled"
+          | undefined,
         notes: values.notes?.trim() || undefined,
         tags,
       };
@@ -135,11 +142,7 @@ export default function CreateTask() {
 
       <Form.Separator />
 
-      <Form.Dropdown
-        id="priority"
-        title="Priority"
-        defaultValue="0"
-      >
+      <Form.Dropdown id="priority" title="Priority" defaultValue="0">
         <Form.Dropdown.Item value="0" title="None" />
         <Form.Dropdown.Item value="1" title="High (1)" />
         <Form.Dropdown.Item value="2" title="High (2)" />
@@ -152,11 +155,7 @@ export default function CreateTask() {
         <Form.Dropdown.Item value="9" title="Low (9)" />
       </Form.Dropdown>
 
-      <Form.Dropdown
-        id="status"
-        title="Status"
-        defaultValue="needsAction"
-      >
+      <Form.Dropdown id="status" title="Status" defaultValue="needsAction">
         <Form.Dropdown.Item value="needsAction" title="Needs Action" />
         <Form.Dropdown.Item value="completed" title="Completed" />
         <Form.Dropdown.Item value="cancelled" title="Cancelled" />

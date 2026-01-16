@@ -1,5 +1,10 @@
-import fetch from "node-fetch";
-import { MorgenTask, CreateTaskRequest, UpdateTaskRequest, ListTasksResponse, MorgenCalendar } from "../types";
+import {
+  MorgenTask,
+  CreateTaskRequest,
+  UpdateTaskRequest,
+  ListTasksResponse,
+  MorgenCalendar,
+} from "../types";
 
 const BASE_URL = "https://api.morgen.so/v3";
 
@@ -7,7 +12,7 @@ export class MorgenAPIError extends Error {
   constructor(
     message: string,
     public statusCode?: number,
-    public responseBody?: unknown
+    public responseBody?: unknown,
   ) {
     super(message);
     this.name = "MorgenAPIError";
@@ -36,7 +41,11 @@ export class MorgenAPI {
 
       try {
         responseBody = await response.json();
-        if (responseBody && typeof responseBody === "object" && "message" in responseBody) {
+        if (
+          responseBody &&
+          typeof responseBody === "object" &&
+          "message" in responseBody
+        ) {
           errorMessage = (responseBody as { message: string }).message;
         }
       } catch {
@@ -54,17 +63,23 @@ export class MorgenAPI {
     return (await response.json()) as T;
   }
 
-  async listTasks(limit: number = 100, updatedAfter?: string): Promise<MorgenTask[]> {
+  async listTasks(
+    limit: number = 100,
+    updatedAfter?: string,
+  ): Promise<MorgenTask[]> {
     const params = new URLSearchParams();
     params.append("limit", limit.toString());
     if (updatedAfter) {
       params.append("updatedAfter", updatedAfter);
     }
 
-    const response = await fetch(`${BASE_URL}/tasks/list?${params.toString()}`, {
-      method: "GET",
-      headers: this.getHeaders(),
-    });
+    const response = await fetch(
+      `${BASE_URL}/tasks/list?${params.toString()}`,
+      {
+        method: "GET",
+        headers: this.getHeaders(),
+      },
+    );
 
     const data = await this.handleResponse<ListTasksResponse>(response);
     return data.tasks || [];
@@ -89,7 +104,10 @@ export class MorgenAPI {
     return this.handleResponse<MorgenTask>(response);
   }
 
-  async updateTask(taskId: string, updates: UpdateTaskRequest): Promise<MorgenTask> {
+  async updateTask(
+    taskId: string,
+    updates: UpdateTaskRequest,
+  ): Promise<MorgenTask> {
     const response = await fetch(`${BASE_URL}/tasks/${taskId}`, {
       method: "PATCH",
       headers: this.getHeaders(),
@@ -114,7 +132,9 @@ export class MorgenAPI {
       headers: this.getHeaders(),
     });
 
-    const data = await this.handleResponse<{ calendars: MorgenCalendar[] }>(response);
+    const data = await this.handleResponse<{ calendars: MorgenCalendar[] }>(
+      response,
+    );
     return data.calendars || [];
   }
 }

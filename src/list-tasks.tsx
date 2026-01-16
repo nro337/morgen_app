@@ -49,7 +49,7 @@ export default function ListTasks() {
           });
         }
       },
-    }
+    },
   );
 
   const filteredTasks = tasks?.filter((task) => {
@@ -98,7 +98,8 @@ export default function ListTasks() {
   async function toggleTaskStatus(task: MorgenTask) {
     try {
       const api = new MorgenAPI(preferences.apiKey);
-      const newStatus = task.status === "completed" ? "needsAction" : "completed";
+      const newStatus =
+        task.status === "completed" ? "needsAction" : "completed";
       await api.updateTask(task.id, { status: newStatus });
       await showToast({
         style: Toast.Style.Success,
@@ -176,8 +177,16 @@ export default function ListTasks() {
                     shortcut={{ modifiers: ["cmd"], key: "e" }}
                   />
                   <Action
-                    title={task.status === "completed" ? "Mark as Incomplete" : "Mark as Complete"}
-                    icon={task.status === "completed" ? Icon.Circle : Icon.CheckCircle}
+                    title={
+                      task.status === "completed"
+                        ? "Mark as Incomplete"
+                        : "Mark as Complete"
+                    }
+                    icon={
+                      task.status === "completed"
+                        ? Icon.Circle
+                        : Icon.CheckCircle
+                    }
                     onAction={() => toggleTaskStatus(task)}
                     shortcut={{ modifiers: ["cmd"], key: "t" }}
                   />
@@ -206,14 +215,10 @@ export default function ListTasks() {
   );
 }
 
-function TaskDetail({ task, onUpdate }: { task: MorgenTask; onUpdate: () => void }) {
+function TaskDetail({ task }: { task: MorgenTask; onUpdate: () => void }) {
   return (
     <List>
-      <List.Item
-        title="Title"
-        subtitle={task.title}
-        icon={Icon.Text}
-      />
+      <List.Item title="Title" subtitle={task.title} icon={Icon.Text} />
       {task.description && (
         <List.Item
           title="Description"
