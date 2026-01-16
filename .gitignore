@@ -30,3 +30,7 @@ yarn-error.log*
 
 # Raycast
 .raycast/
+
+# TypeScript build info
+tsconfig.tsbuildinfo
+raycast-env.d.ts
