@@ -60,7 +60,13 @@ export class MorgenAPI {
       return {} as T;
     }
 
-    return (await response.json()) as T;
+    const contentType = response.headers.get("content-type");
+    if (contentType && contentType.includes("application/json")) {
+      return (await response.json()) as T;
+    }
+
+    // If not JSON, return empty object
+    return {} as T;
   }
 
   async listTasks(
@@ -81,8 +87,14 @@ export class MorgenAPI {
       },
     );
 
-    const data = await this.handleResponse<ListTasksResponse>(response);
-    return data.tasks || [];
+    const data = await this.handleResponse<ListTasksResponse | MorgenTask[]>(response);
+    
+    // Handle both array format and object format
+    if (Array.isArray(data)) {
+      return data;
+    }
+    
+    return (data as ListTasksResponse).tasks || [];
   }
 
   async getTask(taskId: string): Promise<MorgenTask> {

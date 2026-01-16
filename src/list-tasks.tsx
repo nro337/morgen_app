@@ -35,17 +35,31 @@ export default function ListTasks() {
     revalidate,
   } = usePromise(
     async () => {
-      const api = new MorgenAPI(preferences.apiKey);
-      return await api.listTasks(100);
+      try {
+        const api = new MorgenAPI(preferences.apiKey);
+        const result = await api.listTasks(100);
+        console.log("Fetched tasks:", result.length);
+        return result;
+      } catch (error) {
+        console.error("Error fetching tasks:", error);
+        throw error;
+      }
     },
     [],
     {
       onError: (error) => {
+        console.error("usePromise error:", error);
         if (error instanceof MorgenAPIError) {
           showToast({
             style: Toast.Style.Failure,
             title: "Failed to load tasks",
-            message: error.message,
+            message: `${error.message} (Status: ${error.statusCode})`,
+          });
+        } else {
+          showToast({
+            style: Toast.Style.Failure,
+            title: "Failed to load tasks",
+            message: error instanceof Error ? error.message : String(error),
           });
         }
       },
@@ -142,11 +156,23 @@ export default function ListTasks() {
         </List.Dropdown>
       }
     >
-      {filteredTasks?.length === 0 ? (
+      {!tasks || tasks.length === 0 ? (
         <List.EmptyView
-          title="No tasks found"
-          description="Create a new task to get started"
+          title={isLoading ? "Loading..." : "No tasks found"}
+          description={
+            isLoading
+              ? "Fetching your tasks from Morgen..."
+              : tasks?.length === 0
+                ? "You have no tasks. Create a new task to get started."
+                : "No tasks match your search or filter criteria."
+          }
           icon={Icon.CheckCircle}
+        />
+      ) : filteredTasks?.length === 0 ? (
+        <List.EmptyView
+          title="No matching tasks"
+          description="Try adjusting your search or filter"
+          icon={Icon.MagnifyingGlass}
         />
       ) : (
         filteredTasks?.map((task) => (
