@@ -37,7 +37,7 @@ export default function ListTasks() {
     async () => {
       try {
         const api = new MorgenAPI(preferences.apiKey);
-        const result = await api.listTasks(100);
+        const result = await api.listTasks(10);
         console.log("Fetched tasks:", result.length);
         return result;
       } catch (error) {

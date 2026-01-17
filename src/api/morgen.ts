@@ -71,7 +71,7 @@ export class MorgenAPI {
   }
 
   async listTasks(
-    limit: number = 100,
+    limit: number = 10,
     updatedAfter?: string,
   ): Promise<MorgenTask[]> {
     const params = new URLSearchParams();
