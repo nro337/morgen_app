@@ -54,6 +54,11 @@ export interface ListTasksApiResponse {
   data: ListTasksResponse;
 }
 
+// Wrapper type for API responses that may be wrapped in { data: ... }
+export interface ApiResponse<T> {
+  data: T;
+}
+
 export interface MorgenCalendar {
   id: string;
   name: string;

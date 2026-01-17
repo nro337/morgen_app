@@ -4,6 +4,7 @@ import {
   UpdateTaskRequest,
   ListTasksResponse,
   ListTasksApiResponse,
+  ApiResponse,
   MorgenCalendar,
 } from "../types";
 
@@ -70,8 +71,21 @@ export class MorgenAPI {
     return {} as T;
   }
 
+  // Helper method to unwrap API responses that may be wrapped in { data: ... }
+  private unwrapData<T>(response: T | ApiResponse<T>): T {
+    if (
+      response &&
+      typeof response === "object" &&
+      "data" in response &&
+      response.data !== undefined
+    ) {
+      return response.data as T;
+    }
+    return response as T;
+  }
+
   async listTasks(
-    limit: number = 10,
+    limit: number = 100,
     updatedAfter?: string,
   ): Promise<MorgenTask[]> {
     const params = new URLSearchParams();
@@ -96,19 +110,23 @@ export class MorgenAPI {
     // 1. { data: { tasks: [...] } } - wrapped response
     // 2. { tasks: [...] } - direct object
     // 3. [...] - direct array
-    
+
     if (Array.isArray(apiResponse)) {
       return apiResponse;
     }
 
     // Check if it's the wrapped format with data property
-    if ('data' in apiResponse && apiResponse.data && typeof apiResponse.data === 'object') {
+    if (
+      "data" in apiResponse &&
+      apiResponse.data &&
+      typeof apiResponse.data === "object"
+    ) {
       const innerData = apiResponse.data as ListTasksResponse;
       return innerData.tasks || [];
     }
 
     // Direct object format
-    if ('tasks' in apiResponse) {
+    if ("tasks" in apiResponse) {
       return (apiResponse as ListTasksResponse).tasks || [];
     }
 
@@ -121,7 +139,10 @@ export class MorgenAPI {
       headers: this.getHeaders(),
     });
 
-    return this.handleResponse<MorgenTask>(response);
+    const apiResponse = await this.handleResponse<
+      MorgenTask | ApiResponse<MorgenTask>
+    >(response);
+    return this.unwrapData(apiResponse);
   }
 
   async createTask(task: CreateTaskRequest): Promise<MorgenTask> {
@@ -131,7 +152,10 @@ export class MorgenAPI {
       body: JSON.stringify(task),
     });
 
-    return this.handleResponse<MorgenTask>(response);
+    const apiResponse = await this.handleResponse<
+      MorgenTask | ApiResponse<MorgenTask>
+    >(response);
+    return this.unwrapData(apiResponse);
   }
 
   async updateTask(
@@ -144,7 +168,10 @@ export class MorgenAPI {
       body: JSON.stringify(updates),
     });
 
-    return this.handleResponse<MorgenTask>(response);
+    const apiResponse = await this.handleResponse<
+      MorgenTask | ApiResponse<MorgenTask>
+    >(response);
+    return this.unwrapData(apiResponse);
   }
 
   async deleteTask(taskId: string): Promise<void> {
@@ -162,9 +189,11 @@ export class MorgenAPI {
       headers: this.getHeaders(),
     });
 
-    const data = await this.handleResponse<{ calendars: MorgenCalendar[] }>(
-      response,
-    );
-    return data.calendars || [];
+    const apiResponse = await this.handleResponse<
+      { calendars: MorgenCalendar[] } | ApiResponse<{ calendars: MorgenCalendar[] }>
+    >(response);
+    
+    const unwrapped = this.unwrapData(apiResponse);
+    return unwrapped.calendars || [];
   }
 }
