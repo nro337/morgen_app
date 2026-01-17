@@ -46,6 +46,12 @@ export interface UpdateTaskRequest {
 export interface ListTasksResponse {
   tasks: MorgenTask[];
   nextCursor?: string;
+  labelDefs?: unknown[];
+  spaces?: unknown[];
+}
+
+export interface ListTasksApiResponse {
+  data: ListTasksResponse;
 }
 
 export interface MorgenCalendar {

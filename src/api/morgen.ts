@@ -3,6 +3,7 @@ import {
   CreateTaskRequest,
   UpdateTaskRequest,
   ListTasksResponse,
+  ListTasksApiResponse,
   MorgenCalendar,
 } from "../types";
 
@@ -87,14 +88,31 @@ export class MorgenAPI {
       },
     );
 
-    const data = await this.handleResponse<ListTasksResponse | MorgenTask[]>(response);
+    const apiResponse = await this.handleResponse<
+      ListTasksApiResponse | ListTasksResponse | MorgenTask[]
+    >(response);
+
+    // Handle different response formats:
+    // 1. { data: { tasks: [...] } } - wrapped response
+    // 2. { tasks: [...] } - direct object
+    // 3. [...] - direct array
     
-    // Handle both array format and object format
-    if (Array.isArray(data)) {
-      return data;
+    if (Array.isArray(apiResponse)) {
+      return apiResponse;
     }
-    
-    return (data as ListTasksResponse).tasks || [];
+
+    // Check if it's the wrapped format with data property
+    if ('data' in apiResponse && apiResponse.data && typeof apiResponse.data === 'object') {
+      const innerData = apiResponse.data as ListTasksResponse;
+      return innerData.tasks || [];
+    }
+
+    // Direct object format
+    if ('tasks' in apiResponse) {
+      return (apiResponse as ListTasksResponse).tasks || [];
+    }
+
+    return [];
   }
 
   async getTask(taskId: string): Promise<MorgenTask> {
